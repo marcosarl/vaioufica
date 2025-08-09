@@ -8,54 +8,13 @@ def pergunta_booleano(pergunta):
         else:
             print("Por favor, responda com 'sim' ou 'não'.")
 
-def pergunta_urgencia():
-    while True:
-        try:
-            valor = int(input("De 1 (pouco urgente) a 5 (muito urgente), qual o nível de urgência para ir? "))
-            if 1 <= valor <= 5:
-                return valor
-            else:
-                print("Digite um número entre 1 e 5.")
-        except ValueError:
-            print("Por favor, digite um número válido.")
+print("Vamos pensar juntos sobre sua decisão.\n")
 
-def decidir():
-    print("Vamos ajudar você a decidir se vai ou fica.\n")
+quer_ir = pergunta_booleano("Você tem vontade de ir?")
+ficar_resolve = pergunta_booleano("Ficar resolve o problema?")
 
-    quer_ir = pergunta_booleano("Você tem vontade de ir?")
-    if not quer_ir:
-        return "Você não tem vontade de ir, então melhor ficar."
-
-    ficar_resolve = pergunta_booleano("Ficar resolve o problema?")
-    urgencia = pergunta_urgencia()
-
-    pontos = 0
-    pontos += 2 if quer_ir else 0
-    pontos += 2 if not ficar_resolve else 0
-    pontos += urgencia  # de 1 a 5
-
-    if pontos >= 6:
-        decisao = "Ir é a melhor escolha!"
-    elif pontos >= 4:
-        decisao = "Pode pensar um pouco mais, mas ir é uma boa opção."
-    else:
-        decisao = "Melhor ficar mesmo."
-
-    print("\nConclusão:", decisao)
-    return decisao
-
-def salvar_decisao(decisao, arquivo="decisoes.txt"):
-    with open(arquivo, "a") as f:
-        f.write(decisao + "\n")
-
-def main():
-    while True:
-        decisao = decidir()
-        salvar_decisao(decisao)
-        repetir = pergunta_booleano("\nQuer tentar decidir novamente?")
-        if not repetir:
-            print("Obrigado por usar o Decisor Interativo! Até mais.")
-            break
-
-if __name__ == "__main__":
-    main()
+print("\nEstou pensando...")
+if quer_ir and not ficar_resolve:
+    print("Conclusão: Ir é a melhor escolha!")
+else:
+    print("Conclusão: Melhor ficar mesmo.")
