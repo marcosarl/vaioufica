@@ -1,61 +1,147 @@
-def pergunta_booleano(pergunta):
-    while True:
-        resposta = input(pergunta + " (sim/não): ").strip().lower()
-        if resposta in ['sim', 's']:
-            return True
-        elif resposta in ['não', 'nao', 'n']:
-            return False
-        else:
-            print("Por favor, responda com 'sim' ou 'não'.")
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Vai ou Fica?</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f4f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .container {
+    background: white;
+    padding: 25px 30px;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    max-width: 350px;
+    width: 100%;
+    text-align: center;
+  }
+  h1 {
+    margin-bottom: 20px;
+    color: #333;
+  }
+  .question {
+    margin: 15px 0;
+    font-size: 1.1em;
+  }
+  button {
+    margin: 10px 8px 0 8px;
+    padding: 8px 18px;
+    font-size: 1em;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+  #resultado {
+    margin-top: 25px;
+    font-weight: 600;
+    font-size: 1.2em;
+    color: #222;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Vai ou Fica?</h1>
+  
+  <div id="pergunta1" class="question">
+    Você tem vontade de ir?
+    <br />
+    <button onclick="respondePergunta(1, true)">Sim</button>
+    <button onclick="respondePergunta(1, false)">Não</button>
+  </div>
+  
+  <div id="pergunta2" class="question" style="display:none;">
+    Ficar resolve o problema?
+    <br />
+    <button onclick="respondePergunta(2, true)">Sim</button>
+    <button onclick="respondePergunta(2, false)">Não</button>
+  </div>
 
-def pergunta_urgencia():
-    while True:
-        try:
-            valor = int(input("De 1 (pouco urgente) a 5 (muito urgente), qual o nível de urgência para ir? "))
-            if 1 <= valor <= 5:
-                return valor
-            else:
-                print("Digite um número entre 1 e 5.")
-        except ValueError:
-            print("Por favor, digite um número válido.")
+  <div id="pergunta3" class="question" style="display:none;">
+    Qual o nível de urgência para ir? (1 a 5)
+    <br />
+    <input type="number" id="urgenciaInput" min="1" max="5" value="3" />
+    <br />
+    <button onclick="respondeUrgencia()">Enviar</button>
+  </div>
+  
+  <div id="resultado"></div>
+  <button id="botaoReiniciar" style="display:none; margin-top: 20px;" onclick="reiniciar()">Reiniciar</button>
+</div>
 
-def decidir():
-    print("Vamos ajudar você a decidir se vai ou fica.\n")
+<script>
+  let respostas = {};
 
-    quer_ir = pergunta_booleano("Você tem vontade de ir?")
-    if not quer_ir:
-        return "Você não tem vontade de ir, então melhor ficar."
+  function respondePergunta(num, resposta) {
+    respostas[num] = resposta;
+    
+    if (num === 1) {
+      document.getElementById('pergunta1').style.display = 'none';
+      document.getElementById('pergunta2').style.display = 'block';
+    } else if (num === 2) {
+      document.getElementById('pergunta2').style.display = 'none';
+      document.getElementById('pergunta3').style.display = 'block';
+    }
+  }
 
-    ficar_resolve = pergunta_booleano("Ficar resolve o problema?")
-    urgencia = pergunta_urgencia()
+  function respondeUrgencia() {
+    const urgenciaInput = document.getElementById('urgenciaInput');
+    let valor = parseInt(urgenciaInput.value);
+    if (isNaN(valor) || valor < 1 || valor > 5) {
+      alert('Por favor, digite um número entre 1 e 5.');
+      return;
+    }
+    respostas[3] = valor;
+    mostrarResultado();
+  }
 
-    pontos = 0
-    pontos += 2 if quer_ir else 0
-    pontos += 2 if not ficar_resolve else 0
-    pontos += urgencia  # de 1 a 5
+  function mostrarResultado() {
+    const querIr = respostas[1];
+    const ficarResolve = respostas[2];
+    const urgencia = respostas[3];
+    let pontos = 0;
 
-    if pontos >= 6:
-        decisao = "Ir é a melhor escolha!"
-    elif pontos >= 4:
-        decisao = "Pode pensar um pouco mais, mas ir é uma boa opção."
-    else:
-        decisao = "Melhor ficar mesmo."
+    pontos += querIr ? 2 : 0;
+    pontos += !ficarResolve ? 2 : 0;
+    pontos += urgencia;
 
-    print("\nConclusão:", decisao)
-    return decisao
+    let resultadoText = '';
+    if (pontos >= 6) {
+      resultadoText = 'Conclusão: Ir é a melhor escolha!';
+    } else if (pontos >= 4) {
+      resultadoText = 'Conclusão: Pode pensar um pouco mais, mas ir é uma boa opção.';
+    } else {
+      resultadoText = 'Conclusão: Melhor ficar mesmo.';
+    }
 
-def salvar_decisao(decisao, arquivo="decisoes.txt"):
-    with open(arquivo, "a") as f:
-        f.write(decisao + "\n")
+    document.getElementById('pergunta3').style.display = 'none';
+    document.getElementById('resultado').textContent = resultadoText;
+    document.getElementById('botaoReiniciar').style.display = 'inline-block';
+  }
 
-def main():
-    while True:
-        decisao = decidir()
-        salvar_decisao(decisao)
-        repetir = pergunta_booleano("\nQuer tentar decidir novamente?")
-        if not repetir:
-            print("Obrigado por usar o Decisor Interativo! Até mais.")
-            break
-
-if __name__ == "__main__":
-    main()
+  function reiniciar() {
+    respostas = {};
+    document.getElementById('resultado').textContent = '';
+    document.getElementById('botaoReiniciar').style.display = 'none';
+    document.getElementById('pergunta1').style.display = 'block';
+    document.getElementById('pergunta2').style.display = 'none';
+    document.getElementById('pergunta3').style.display = 'none';
+    document.getElementById('urgenciaInput').value = '3';
+  }
+</script>
+</body>
+</html>
